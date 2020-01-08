@@ -519,6 +519,12 @@ void SFE_UBLOX_GPS::processRTCMframe(uint8_t incoming)
   {
     rtcmLen |= incoming; //Bits 0-7 of packet length
     rtcmLen += 6;        //There are 6 additional bytes of what we presume is header, msgType, CRC, and stuff
+
+    //Check for exceedingly long RTCM frame. See issue 67: https://github.com/sparkfun/SparkFun_Ublox_Arduino_Library/issues/67
+    if (rtcmLen > 2000)
+    {
+      currentSentence = NONE; //Reset and start looking for next sentence type
+    }
   }
   /*else if (rtcmFrameCounter == 3)
   {
