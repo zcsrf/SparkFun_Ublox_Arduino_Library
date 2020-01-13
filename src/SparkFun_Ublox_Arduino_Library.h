@@ -61,7 +61,7 @@
 #elif defined(__SAMD21G18A__)
 
 //SAMD21 uses RingBuffer.h
-#define I2C_BUFFER_LENGTH SERIAL_BUFFER_SIZE
+#define I2C_BUFFER_LENGTH (SERIAL_BUFFER_SIZE - 1)
 
 //#elif __MK20DX256__
 //Teensy
@@ -72,7 +72,6 @@
 
 //The catch-all default is 32
 #define I2C_BUFFER_LENGTH 32
-//#define I2C_BUFFER_LENGTH 16 //For testing on Artemis
 
 #endif
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
