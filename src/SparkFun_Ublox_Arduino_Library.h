@@ -132,6 +132,18 @@ typedef enum
 	SFE_UBLOX_PACKET_PACKETBUF
 } sfe_ublox_packet_buffer_e;
 
+// Identify Power Setup Values
+// FullPower, Balenced, Interval, Agressive 1Hz / 2Hz
+typedef enum
+{
+	SFE_UBLOX_POWER_FULLPOWER,
+	SFE_UBLOX_POWER_BALANCED,
+	SFE_UBLOX_POWER_INTERVAL,
+	SFE_UBLOX_POWER_1HZ,
+	SFE_UBLOX_POWER_2HZ
+} sfe_ublox_power_mode_e;
+
+
 //Registers
 const uint8_t UBX_SYNCH_1 = 0xB5;
 const uint8_t UBX_SYNCH_2 = 0x62;
@@ -637,6 +649,10 @@ public:
 	void debugPrint(char *message);					   //Safely print debug statements
 	void debugPrintln(char *message);				   //Safely print debug statements
 	const char *statusString(sfe_ublox_status_e stat); //Pretty print the return value
+
+	// Sets the device power mode, this allows to automatically set some power saving parameters
+	// User can pick between Full power / balanced / interval (in seconds) / 1,2,4 Hz refresh rate. 
+	boolean setPowerMode (sfe_ublox_power_mode_e powerSetup,uint32_t period, uint32_t onTime, uint16_t maxWait = 1100);
 
 	//Support for geofences
 	boolean addGeofence(int32_t latitude, int32_t longitude, uint32_t radius, byte confidence = 0, byte pinPolarity = 0, byte pin = 0, uint16_t maxWait = 1100); // Add a new geofence

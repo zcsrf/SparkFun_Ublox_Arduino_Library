@@ -2327,6 +2327,73 @@ boolean SFE_UBLOX_GPS::disableRTCMmessage(uint8_t messageNumber, uint8_t portID,
   return (enableRTCMmessage(messageNumber, portID, 0, maxWait));
 }
 
+boolean SFE_UBLOX_GPS::setPowerMode(sfe_ublox_power_mode_e powerSetup, uint32_t period, uint32_t onTime, uint16_t maxWait)
+{
+
+  // Check the Protocol Version as UBX_CFG_PMS is not supported on protocol <18 & >= 22)
+  //uint8_t protVer = getProtocolVersionHigh(maxWait);
+  
+  /*
+  if (_printDebug == true)
+  {
+    _debugSerial->print(F("Protocol version is "));
+    _debugSerial->println(protVer);
+  }
+  */
+  
+  /*
+  if (protVer < 18 | protVer > 22 )
+  {
+    if (_printDebug == true)
+    {
+      _debugSerial->println(F("setPoerMode (UBX_CFG_PMS) is not supported by this protocol version"));
+    }
+    return (false);
+  }	
+  */
+  
+  if (onTime > period)
+  {
+    if (_printDebug == true)
+    {
+      _debugSerial->println(F("setPowerMode (UBX_CFG_PMS) ontime must be smaller than period"));
+    }
+    return (false);
+  }
+  
+  packetCfg.cls = UBX_CLASS_CFG;
+  packetCfg.id = UBX_CFG_PMS;
+  packetCfg.len = 8;
+  packetCfg.startingSpot = 0;
+  payloadCfg[0] = 0x00;
+  payloadCfg[1] = powerSetup; // Power Setup value
+  payloadCfg[2] = 0x00;	// Period [u2], per default 0
+  payloadCfg[3] = 0x00; 
+  payloadCfg[4] = 0x00; // OnTime [u2], per default 0
+  payloadCfg[5] = 0x00; 
+  payloadCfg[6] = 0x00; // Reserved 1
+  payloadCfg[7] = 0x00; // Reserved 2
+  
+  if (powerSetup ==  SFE_UBLOX_POWER_INTERVAL)
+  {
+	uint8_t _ontime[2];
+	_ontime[0] = onTime & 0xFF;
+    _ontime[1] = (onTime >> 8) & 0xFF;
+	  
+	uint8_t _period[2];
+	_period[0] = period & 0xFF;
+	_period[1] = (period >> 8) & 0xFF;
+	
+	payloadCfg[2] = _period[0];
+	payloadCfg[3] = _period[1];
+	
+	payloadCfg[4] = _ontime[0];
+	payloadCfg[5] = _ontime[1];
+  }
+  
+  return ((sendCommand(&packetCfg, maxWait)) != SFE_UBLOX_STATUS_COMMAND_NACK); // We are only expecting an ACK
+}
+
 //Add a new geofence using UBX-CFG-GEOFENCE
 boolean SFE_UBLOX_GPS::addGeofence(int32_t latitude, int32_t longitude, uint32_t radius, byte confidence, byte pinPolarity, byte pin, uint16_t maxWait)
 {
