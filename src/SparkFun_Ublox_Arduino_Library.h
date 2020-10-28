@@ -654,6 +654,9 @@ public:
 	// User can pick between Full power / balanced / interval (in seconds) / 1,2,4 Hz refresh rate. 
 	boolean setPowerMode (sfe_ublox_power_mode_e powerSetup,uint32_t period, uint32_t onTime, uint16_t maxWait = 1100);
 
+	boolean getGnss(uint16_t maxWait = 1100);
+	boolean setGnss(uint16_t maxWait = 1100);
+	
 	//Support for geofences
 	boolean addGeofence(int32_t latitude, int32_t longitude, uint32_t radius, byte confidence = 0, byte pinPolarity = 0, byte pin = 0, uint16_t maxWait = 1100); // Add a new geofence
 	boolean clearGeofences(uint16_t maxWait = 1100);																											 //Clears all geofences

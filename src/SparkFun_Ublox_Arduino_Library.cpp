@@ -2394,6 +2394,99 @@ boolean SFE_UBLOX_GPS::setPowerMode(sfe_ublox_power_mode_e powerSetup, uint32_t 
   return ((sendCommand(&packetCfg, maxWait)) != SFE_UBLOX_STATUS_COMMAND_NACK); // We are only expecting an ACK
 }
 
+boolean SFE_UBLOX_GPS::getGnss(uint16_t maxWait)
+{
+  packetCfg.cls = UBX_CLASS_CFG;
+  packetCfg.id = UBX_CFG_GNSS;
+  packetCfg.len = 0;
+  packetCfg.startingSpot = 0;
+
+  //Ask module for the geofence status. Loads into payloadCfg.
+  return (sendCommand(&packetCfg, maxWait) != SFE_UBLOX_STATUS_DATA_RECEIVED); // We are expecting data and an ACK
+}
+
+// Sets the GNSS options
+boolean SFE_UBLOX_GPS::setGnss(uint16_t maxWait)
+{
+  packetCfg.cls = UBX_CLASS_CFG;
+  packetCfg.id = UBX_CFG_GNSS;
+  packetCfg.len = 0x3C;
+  packetCfg.startingSpot = 0;
+  payloadCfg[0] = 0x00;
+  payloadCfg[1] = 0x20; // 32 Channels Available
+  payloadCfg[2] = 0x20;	// Use 32 Channels
+  payloadCfg[3] = 0x07; // 7 Configuration Blocks
+  
+  // 1St Conf. Block
+  payloadCfg[4] = 0x00; // 0x0 - GPS - GnssId
+  payloadCfg[5] = 0x08;	// resTrkCh - Reserved Channels
+  payloadCfg[6] = 0x10; // maxTrkCh - Maximum Tracking Channels
+  payloadCfg[7] = 0x00; // reserved1
+  payloadCfg[8] = 0x01;  //
+  payloadCfg[9] = 0x00;  // bitfield of flags
+  payloadCfg[10] = 0x01; //
+  payloadCfg[11] = 0x01; //
+  
+  payloadCfg[12] = 0x01; // 0x 1 - SBAS - Gnss Id
+  payloadCfg[13] = 0x01; // resTrkCh - Reserved Channels
+  payloadCfg[14] = 0x03; // maxTrkCh - Maximum Tracking Channels
+  payloadCfg[15] = 0x00; // reserved1
+  payloadCfg[16] = 0x01;
+  payloadCfg[17] = 0x00;
+  payloadCfg[18] = 0x01;
+  payloadCfg[19] = 0x01;
+  
+  payloadCfg[20] = 0x02; // 0x2 - Galileo - Gnss Id
+  payloadCfg[21] = 0x04; // resTrkCh - Reserved Channels
+  payloadCfg[22] = 0x08; // maxTrkCh - Maximum Tracking Channels
+  payloadCfg[23] = 0x00; // reserved1
+  payloadCfg[24] = 0x01;
+  payloadCfg[25] = 0x00;
+  payloadCfg[26] = 0x01;
+  payloadCfg[27] = 0x01;
+  
+  payloadCfg[28] = 0x03; // 0x3 - Beidou Gnss Id
+  payloadCfg[29] = 0x08; // resTrkCh - Reserved Channels
+  payloadCfg[30] = 0x10; // maxTrkCh - Maximum Tracking Channels
+  payloadCfg[31] = 0x00; // reserved1
+  payloadCfg[32] = 0x00;
+  payloadCfg[33] = 0x00;
+  payloadCfg[34] = 0x00;
+  payloadCfg[35] = 0x01;
+  
+  payloadCfg[36] = 0x04; // 0x4 - IMES _ Gnss Id
+  payloadCfg[37] = 0x00; // resTrkCh - Reserved Channels
+  payloadCfg[38] = 0x08; // maxTrkCh - Maximum Tracking Channels
+  payloadCfg[39] = 0x00; // reserved1
+  payloadCfg[40] = 0x00;
+  payloadCfg[41] = 0x00;
+  payloadCfg[42] = 0x01;
+  payloadCfg[43] = 0x03;
+  
+  payloadCfg[44] = 0x05; // 0x5 - QZSS - Gnss Id
+  payloadCfg[45] = 0x00; // resTrkCh - Reserved Channels
+  payloadCfg[46] = 0x03; // maxTrkCh - Maximum Tracking Channels
+  payloadCfg[47] = 0x00; // reserved1
+  payloadCfg[48] = 0x01;
+  payloadCfg[49] = 0x00;
+  payloadCfg[50] = 0x01;
+  payloadCfg[51] = 0x05;
+  
+  payloadCfg[52] = 0x06; // 0x6 -Glonass - Gnss Id
+  payloadCfg[53] = 0x08; // resTrkCh - Reserved Channels
+  payloadCfg[54] = 0x0E; // maxTrkCh - Maximum Tracking Channels
+  payloadCfg[55] = 0x00; // reserved1
+  payloadCfg[56] = 0x01;
+  payloadCfg[57] = 0x00;
+  payloadCfg[58] = 0x01;
+  payloadCfg[59] = 0x01;
+  
+  //payloadCfg[60] = 0x56;
+  //payloadCfg[61] = 0x53;
+  
+  return ((sendCommand(&packetCfg, maxWait)) != SFE_UBLOX_STATUS_COMMAND_NACK); // We are only expecting an ACK
+}
+
 //Add a new geofence using UBX-CFG-GEOFENCE
 boolean SFE_UBLOX_GPS::addGeofence(int32_t latitude, int32_t longitude, uint32_t radius, byte confidence, byte pinPolarity, byte pin, uint16_t maxWait)
 {
